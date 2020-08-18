@@ -5,7 +5,6 @@ A rest API written in Node JS with Express for my Minecraft Server **mc.laboulan
 There are 2 routes: "stats" and "minecraft"
 
 - /stats/breadberry
-Return 
 ```javascript
 {
   "cpuLoad":  //[Integer] CPU Load percentage
