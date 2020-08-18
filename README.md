@@ -4,7 +4,7 @@ A rest API written in Node JS with Express for my Minecraft Server **mc.laboulan
 ## 📌 Endpoints
 There are 2 routes: "stats" and "minecraft"
 
-- /stats/breadberry
+- /stats/breadberry<br/>
 ```javascript
 {
   "cpuLoad":  //[Integer] CPU Load percentage
@@ -14,7 +14,7 @@ There are 2 routes: "stats" and "minecraft"
   
 }
 ```
-- /minecraft/player/<username>
+- /minecraft/player/<username><br/>
 ```javascript
 {
   "uuid":          //[String] User's Mojang UUID
@@ -29,7 +29,7 @@ There are 2 routes: "stats" and "minecraft"
   "lastOnline":    //[Integer] Timestamp 
 }
 ```
-- /minecraft/town/<name>
+- /minecraft/town/<name><br/>
 ```javascript
 {
   "residents":  //[Array]
@@ -42,7 +42,7 @@ There are 2 routes: "stats" and "minecraft"
   "registered": //[Integer] Timestamp
 }
 ```
-- /minecraft/nation/<name>
+- /minecraft/nation/<name><br/>
 ```javascript
 {
 "towns":      //[Array]
@@ -54,7 +54,7 @@ There are 2 routes: "stats" and "minecraft"
 }
 ```
 
-- /minecraft/players
+- /minecraft/players<br/>
 List of object of every player on the server
 ```javascript
 [
@@ -65,10 +65,10 @@ List of object of every player on the server
   ...
 ]
 ```
-- /minecraft/towns
+- /minecraft/towns<br/>
 Array of every towns names
 
-- /minecraft/nations
+- /minecraft/nations<br/>
 Array of every nations names
 
 ## ⚖ License 
