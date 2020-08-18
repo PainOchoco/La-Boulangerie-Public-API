@@ -1,0 +1,22 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "PainOchoco",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mathjs": "^7.1.0",
+    "minecraft-player": "^1.0.1",
+    "moment": "^2.27.0",
+    "mysql": "^2.18.1",
+    "node-fetch": "^2.6.0",
+    "request": "^2.88.2",
+    "systeminformation": "^4.26.10"
+  }
+}
