@@ -3,24 +3,35 @@ const router = express.Router();
 const fetch = require("node-fetch");
 const minecraftPlayer = require("minecraft-player");
 const mysql = require("mysql");
-const moment = require("moment");
+const ftp = require("basic-ftp");
+const yaml = require("js-yaml");
+const fs = require("fs");
 const statusAPI = "https://mcapi.us/server/query?ip=mc.laboulangerie.net";
-const { host, user, pass, base } = require("../envs");
+const {
+  SQLhost,
+  SQLuser,
+  SQLpass,
+  SQLbase,
+  FTPhost,
+  FTPuser,
+  FTPpass,
+} = require("../envs");
 
-const connection = mysql.createConnection({
-  host: host,
-  user: user,
-  password: pass,
-  database: base,
+const SQLconnection = mysql.createConnection({
+  host: SQLhost,
+  user: SQLuser,
+  password: SQLpass,
+  database: SQLbase,
 });
 
-connection.connect();
+SQLconnection.connect();
 
 // * Fetch informations
+
 router.get("/players", (req, res) => {
   function getPlayers() {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         "SELECT uuid,username FROM luckperms_players",
         (error, results, fields) => {
           if (error) return reject(error);
@@ -43,7 +54,7 @@ router.get("/players", (req, res) => {
 router.get("/towns", (req, res) => {
   function getTowns() {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         "SELECT name FROM TOWNY_TOWNS",
         (error, results, fields) => {
           if (error) return reject(error);
@@ -64,7 +75,7 @@ router.get("/towns", (req, res) => {
 router.get("/nations", (req, res) => {
   function getNations() {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         "SELECT name FROM TOWNY_NATIONS",
         (error, results, fields) => {
           if (error) return reject(error);
@@ -88,7 +99,7 @@ router.get("/town/:name", (req, res) => {
 
   function getData(townName) {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         `SELECT * FROM TOWNY_TOWNS WHERE name = '${townName}'`,
         (error, results, fields) => {
           if (error) return reject(error);
@@ -131,7 +142,7 @@ router.get("/town/:name", (req, res) => {
 
   getData(townName)
     .then((data) => {
-      res.json(data[0]);
+      res.json(data);
     })
     .catch((err) => console.error(err));
 });
@@ -141,7 +152,7 @@ router.get("/nation/:name", (req, res) => {
 
   function getData(nationName) {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         `SELECT * FROM TOWNY_NATIONS WHERE name = '${nationName}'`,
         (error, results, fields) => {
           if (error) return reject(error);
@@ -152,10 +163,10 @@ router.get("/nation/:name", (req, res) => {
             ? dataPacket.assistants.split("#")
             : "none";
           let nationBoard;
-          if (dataPacket.nationBoard == "/town set board [msg]") {
-            townBoard = "none";
+          if (dataPacket.nationBoard == "/nation set board [msg]") {
+            nationBoard = "none";
           } else {
-            townBoard = dataPacket.townBoard;
+            nationBoard = dataPacket.nationBoard;
           }
           let isOpen;
           if ((dataPacket.open = "1")) {
@@ -182,7 +193,7 @@ router.get("/nation/:name", (req, res) => {
 
   getData(nationName)
     .then((data) => {
-      res.json(data[0]);
+      res.json(data);
     })
     .catch((err) => console.error(err));
 });
@@ -202,13 +213,13 @@ router.get("/player/:id", async (req, res) => {
 
   function getGroups(uuid) {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         `SELECT * FROM luckperms_user_permissions WHERE uuid = '${uuid}'`,
         (error, results, fields) => {
           if (error) return reject(error);
           let groups = [];
           results.forEach((result) => {
-            groups.push(result.permission);
+            groups.push(result.permission.slice(6));
           });
           resolve(groups);
         }
@@ -216,9 +227,9 @@ router.get("/player/:id", async (req, res) => {
     });
   }
 
-  function getCity(username) {
+  function getTown(username) {
     return new Promise((resolve, reject) => {
-      connection.query(
+      SQLconnection.query(
         `SELECT * FROM TOWNY_RESIDENTS WHERE name = '${username}'`,
         (error, results, fields) => {
           let dataPacket = results[0];
@@ -241,22 +252,73 @@ router.get("/player/:id", async (req, res) => {
     });
   }
 
-  Promise.all([getGroups(uuid), getCity(username)])
-    .then((data) =>
+  function getUserData(uuid) {
+    downloadUserData(uuid);
+    return new Promise((resolve, reject) => {
+      const userdata = require("../tmp/userdata.json");
+      let money = userdata.money;
+      let isAfk = userdata.afk;
+      let logoutLocation = {
+        x: userdata["logoutlocation"]["x"],
+        y: userdata["logoutlocation"]["y"],
+        z: userdata["logoutlocation"]["z"],
+      };
+      let nickname = userdata.nickname
+        ? userdata.nickname !== username
+          ? userdata.nickname
+          : "none"
+        : "none";
+      resolve({ money, isAfk, logoutLocation, nickname });
+    });
+  }
+
+  async function downloadUserData(uuid) {
+    const client = new ftp.Client();
+    client.ftp.verbose = true;
+    try {
+      await client.access({
+        host: FTPhost,
+        user: FTPuser,
+        password: FTPpass,
+        secure: false,
+      });
+      await client.downloadTo(
+        "./tmp/userdata.yml",
+        `/plugins/Essentials/userdata/${uuid}.yml`
+      );
+      let dataObject = JSON.stringify(
+        yaml.load(fs.readFileSync("./tmp/userdata.yml", { encoding: "utf-8" }))
+      );
+      fs.writeFileSync("./tmp/userdata.json", dataObject);
+    } catch (err) {
+      console.log(err);
+    }
+    client.close();
+  }
+
+  Promise.all([getGroups(uuid), getTown(username), getUserData(uuid)])
+    .then((data) => {
+      let groupsData = data[0];
+      let townData = data[1];
+      let userData = data[2];
       res.json({
         uuid: uuid,
         username: username,
         online: isOnline,
         skinRenderURL:
           "https://visage.surgeplay.com/bust/512/" + cleanUUID + ".png",
-        groups: data[0],
-        town: data[1].town,
-        townRank: data[1].townRank,
-        nationRank: data[1].nationRank,
-        friends: data[1].friends,
-        lastOnline: data[1].lastOnline,
-      })
-    )
+        groups: groupsData,
+        town: townData.town,
+        townRank: townData.townRank,
+        nationRank: townData.nationRank,
+        friends: townData.friends,
+        lastOnline: townData.lastOnline,
+        money: userData.money,
+        isAfk: userData.isAfk,
+        logoutLocation: userData.logoutLocation,
+        nickname: userData.nickname,
+      });
+    })
     .catch((err) => console.error(err));
 });
 
