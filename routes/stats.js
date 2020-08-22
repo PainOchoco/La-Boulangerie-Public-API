@@ -6,7 +6,6 @@ const si = require("systeminformation");
 
 // * Fetch informations
 let cpuTemp, cpuLoad, ramUsage, latency;
-let success = true;
 try {
   si.cpuTemperature().then((data) => {
     return (cpuTemp = math.round(data.main));
@@ -26,13 +25,10 @@ try {
 
 router.get("/breadberry", (req, res) => {
   res.json({
-    success: success,
-    informations: {
-      cpuLoad: cpuLoad,
-      cpuTemp: cpuTemp,
-      ramUsage: ramUsage,
-      latency: latency,
-    },
+    cpuLoad: cpuLoad,
+    cpuTemp: cpuTemp,
+    ramUsage: ramUsage,
+    latency: latency,
   });
 });
 
