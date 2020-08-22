@@ -9,8 +9,10 @@
   "author": "PainOchoco",
   "license": "MIT",
   "dependencies": {
+    "basic-ftp": "^4.6.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "js-yaml": "^3.14.0",
     "mathjs": "^7.1.0",
     "minecraft-player": "^1.0.1",
     "moment": "^2.27.0",
