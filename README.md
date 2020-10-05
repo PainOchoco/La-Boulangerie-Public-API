@@ -26,7 +26,14 @@ There are 2 routes: "stats" and "minecraft"
   "townRank":      // [String] Player's rank in his town
   "nationRank":    // [String] Player's rank in his nation
   "friends":       // [Array] Player's friends
-  "lastOnline":    // [Integer] Timestamp 
+  "lastOnline":    // [Integer] Timestamp
+  "money":         // [Integer] Player's money
+  "isAfk":         // [Boolean] 
+  "logoutLocation"://[Object]
+    "x":           // [Integer] X coordinate
+    "y":           // [Integer] Y coordinate
+    "z":           // [Integer] Z coordinate
+  "nickame":       // [String] Player's nickname
 }
 ```
 - /minecraft/town/<name><br/>
