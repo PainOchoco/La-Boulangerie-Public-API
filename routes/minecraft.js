@@ -252,10 +252,16 @@ router.get("/player/:id", async (req, res) => {
     });
   }
 
-  function getUserData(uuid) {
-    downloadUserData(uuid);
-    return new Promise((resolve, reject) => {
-      const userdata = require("../tmp/userdata.json");
+  async function getUserData(uuid) {
+    return new Promise(async (resolve, reject) => {
+      fs.readdir("./tmp", (err, files) => {
+        files.forEach((file) =>
+          fs.unlink("./tmp/" + file, (err) => {
+            if (err) throw err;
+          })
+        );
+      });
+      const userdata = await downloadUserData(uuid);
       let money = userdata.money;
       let isAfk = userdata.afk;
       let logoutLocation = {
@@ -273,7 +279,7 @@ router.get("/player/:id", async (req, res) => {
   }
 
   async function downloadUserData(uuid) {
-    const client = new ftp.Client();
+    const client = new ftp.Client((timeout = 20000));
     client.ftp.verbose = true;
     try {
       await client.access({
@@ -282,14 +288,16 @@ router.get("/player/:id", async (req, res) => {
         password: FTPpass,
         secure: false,
       });
+      client.trackProgress((info) => console.log(info.bytesOverall));
       await client.downloadTo(
-        "./tmp/userdata.yml",
+        `./tmp/${uuid}.yml`,
         `/plugins/Essentials/userdata/${uuid}.yml`
       );
       let dataObject = JSON.stringify(
-        yaml.load(fs.readFileSync("./tmp/userdata.yml", { encoding: "utf-8" }))
+        yaml.load(fs.readFileSync(`./tmp/${uuid}.yml`, { encoding: "utf-8" }))
       );
-      fs.writeFileSync("./tmp/userdata.json", dataObject);
+      fs.writeFileSync(`./tmp/${uuid}.json`, dataObject);
+      return require(`../tmp/${uuid}.json`);
     } catch (err) {
       console.log(err);
     }
@@ -304,7 +312,7 @@ router.get("/player/:id", async (req, res) => {
       res.json({
         uuid: uuid,
         username: username,
-        online: isOnline,
+        isOnline: isOnline,
         skinRenderURL:
           "https://visage.surgeplay.com/bust/512/" + cleanUUID + ".png",
         groups: groupsData,

@@ -28,3 +28,7 @@ app.use((error, req, res, next) => {
 app.listen(port, () => {
   console.log("[API] Listening to port " + port + "!");
 });
+
+process.on("uncaughtException", function (err) {
+  console.log(err);
+});
