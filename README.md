@@ -2,7 +2,7 @@
 A rest API written in Node JS with Express for my Minecraft Server **mc.laboulangerie.net** and for my Raspberry Pi's status.
 
 ## 📌 Endpoints
-There are 2 routes: "stats" and "minecraft"
+There are 2 main routes: "stats" and "minecraft"
 
 - /stats/breadberry<br/>
 ```javascript
@@ -17,28 +17,29 @@ There are 2 routes: "stats" and "minecraft"
 - /minecraft/player/<username><br/>
 ```javascript
 {
-  "uuid":          // [String] User's Mojang UUID
-  "username":      // [String] It's written ok
+  "uuid":          // [String] 
+  "username":      // [String] 
   "online":        // [Boolean] If the player is on the Minecraft server
   "skinRenderURL": // [String] URL to a Minecraft Skin render using visage.surgeplay.com
-  "groups":        // [Array] Player's groups
+  "groups":        // [Array]
   "town":          // [String] Town the player is in
-  "townRank":      // [String] Player's rank in his town
-  "nationRank":    // [String] Player's rank in his nation
-  "friends":       // [Array] Player's friends
-  "lastOnline":    // [Integer] Timestamp
-  "money":         // [Integer] Player's money
+  "townRank":      // [String] 
+  "nationRank":    // [String] 
+  "friends":       // [Array]
+  "lastOnline":    // [Integer]
+  "money":         // [Integer]
   "isAfk":         // [Boolean] 
-  "logoutLocation"://[Object]
-    "x":           // [Integer] X coordinate
-    "y":           // [Integer] Y coordinate
-    "z":           // [Integer] Z coordinate
-  "nickame":       // [String] Player's nickname
+  "logoutLocation":// [Object]
+    "x":           // [Integer]
+    "y":           // [Integer]
+    "z":           // [Integer] 
+  "nickame":       // [String]
 }
 ```
 - /minecraft/town/<name><br/>
 ```javascript
 {
+  "name":       // [Array]
   "residents":  // [Array]
   "mayor":      // [String]
   "nation":     // [String]
@@ -46,18 +47,22 @@ There are 2 routes: "stats" and "minecraft"
   "townBoard":  // [String]
   "isOpen":     // [Boolean]
   "tag":        // [String]
-  "registered": // [Integer] Timestamp
+  "registered": // [Integer]
 }
 ```
 - /minecraft/nation/<name><br/>
 ```javascript
 {
+"name":       // [String]
+"king":       // [String]
 "towns":      // [Array]
 "capital":    // [String]
 "assistants": // [Array]
+"residents":  // [Array]
 "isOpen":     // [Boolean]
 "tag":        // [String]
 "registered": // [Integer] Timestamp
+"color":      // [Hex color code]
 }
 ```
 
