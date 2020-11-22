@@ -20,9 +20,9 @@ There are 2 main routes: "stats" and "minecraft"
   "uuid":          // [String] 
   "username":      // [String] 
   "online":        // [Boolean] If the player is on the Minecraft server
-  "skinRenderURL": // [String] URL to a Minecraft Skin render using visage.surgeplay.com
+  "skinRenderURL": // [String]  URL to a Minecraft Skin render using visage.surgeplay.com
   "groups":        // [Array]
-  "town":          // [String] Town the player is in
+  "town":          // [String]
   "townRank":      // [String] 
   "nationRank":    // [String] 
   "friends":       // [Array]
