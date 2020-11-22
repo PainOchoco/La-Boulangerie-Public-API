@@ -1,6 +1,8 @@
 # 🥖 La Boulangerie Public API
 A rest API written in Node JS with Express for my Minecraft Server **mc.laboulangerie.net** and for my Raspberry Pi's status.
 
+It's running on http://api.laboulangerie.net:4242.
+
 ## 📌 Endpoints
 There are 2 main routes: "stats" and "minecraft"
 
