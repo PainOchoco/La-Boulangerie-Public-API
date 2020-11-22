@@ -1,4 +1,4 @@
-# La-Boulangerie-Public-API
+# 🥖 La Boulangerie Public API
 A rest API written in Node JS with Express for my Minecraft Server **mc.laboulangerie.net** and for my Raspberry Pi's status.
 
 ## 📌 Endpoints
